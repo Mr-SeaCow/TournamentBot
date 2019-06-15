@@ -20,5 +20,4 @@ module.exports = (Client, message, args) => {
         if (err) return console.err;
         message.channel.send(`You were successfully registered under the name "**${name}**".`)
     })
-
 }
