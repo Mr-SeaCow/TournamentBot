@@ -1,0 +1,129 @@
+{
+    "tourneyChannelId": "",
+    "registrationIsClosed": false,
+    "tourneyHasStarted": false,
+    "players": [
+        "pompouspanda",
+        "enjoipanda",
+        "nininmin",
+        "dragon_king^-^",
+        "enjoi",
+        "iimrexclusive",
+        "texianhero",
+        "-deceived",
+        "chibbzee",
+        "hoodratdiplomat",
+        "scythe",
+        "violinpanda",
+        "mr.seacow"
+    ],
+    "totalRounds": 0,
+    "matchData": [
+        {
+            "teams": {
+                "Orange": [
+                    {
+                        "score": "514",
+                        "name": "texianhero"
+                    },
+                    {
+                        "score": "338",
+                        "name": "-deceived"
+                    },
+                    {
+                        "score": "322",
+                        "name": "SNE gis) eae"
+                    }
+                ],
+                "Blue": [
+                    {
+                        "score": "384",
+                        "name": "hoodratdiplomat"
+                    },
+                    {
+                        "score": "262",
+                        "name": "scythe"
+                    },
+                    {
+                        "score": "",
+                        "name": "DCE) AATel tia) rela ler)"
+                    }
+                ]
+            },
+            "victor": "orange",
+            "overtime": false,
+            "round": 1
+        }
+    ],
+    "completedRounds": 0,
+    "overallLeaderboard": {
+        "mr.seacow": {
+            "wins": 1,
+            "overtime": 0
+        }
+    },
+    "sortedAfterRoundLeaderboard": [
+        {
+            "name": "texianhero",
+            "score": 514,
+            "points": 2
+        },
+        {
+            "name": "hoodratdiplomat",
+            "score": 384,
+            "points": 0
+        },
+        {
+            "name": "-deceived",
+            "score": 338,
+            "points": 2
+        },
+        {
+            "name": "chibbzee",
+            "score": 322,
+            "points": 2
+        },
+        {
+            "name": "scythe",
+            "score": 262,
+            "points": 0
+        },
+        {
+            "name": "violinpanda",
+            "score": 194,
+            "points": 0
+        }
+    ],
+    "currentRoundLeaderboard": {
+        "hoodratdiplomat": {
+            "name": "hoodratdiplomat",
+            "score": 384,
+            "points": 0
+        },
+        "scythe": {
+            "name": "scythe",
+            "score": 262,
+            "points": 0
+        },
+        "violinpanda": {
+            "name": "violinpanda",
+            "score": 194,
+            "points": 0
+        },
+        "texianhero": {
+            "name": "texianhero",
+            "score": 514,
+            "points": 2
+        },
+        "-deceived": {
+            "name": "-deceived",
+            "score": 338,
+            "points": 2
+        },
+        "chibbzee": {
+            "name": "chibbzee",
+            "score": 322,
+            "points": 2
+        }
+    }
+}

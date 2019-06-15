@@ -1,0 +1,28 @@
+{
+  "name": "tournament-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Matthew",
+  "license": "ISC",
+  "dependencies": {
+    "canny-edge-detector": "^1.0.0",
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.0.0",
+    "image-js": "^0.21.6",
+    "jimp": "^0.6.4",
+    "node-tesseract-ocr": "^0.1.0",
+    "tesseract.js": "^1.0.19"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "data/*"
+    ]
+  }
+}

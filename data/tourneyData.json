@@ -1,0 +1,191 @@
+{
+  "tourneyChannelId": "373879839947489281",
+  "registrationIsClosed": true,
+  "tourneyHasStarted": true,
+  "players": [
+    "pompouspanda",
+    "enjoipanda",
+    "nininmin",
+    "dragon_king^-^",
+    "enjoi",
+    "iimrexclusive",
+    "texianhero",
+    "-deceived",
+    "chibbzee",
+    "hoodratdiplomat",
+    "scythe",
+    "violinpanda",
+    "mr.seacow",
+    "peeisstored"
+  ],
+  "totalRounds": 2,
+  "nextMatchID": 3,
+  "matchData": [
+    {
+      "teams": {
+        "orange": [
+          {
+            "score": "330",
+            "name": "nininmin"
+          },
+          {
+            "score": "297",
+            "name": "dragon_king^-^"
+          },
+          {
+            "score": "240",
+            "name": "enjoi"
+          }
+        ],
+        "blue": [
+          {
+            "score": "366",
+            "name": "mr.seacow"
+          },
+          {
+            "score": "354",
+            "name": "pompouspanda"
+          },
+          {
+            "score": "272",
+            "name": "enjoipanda"
+          }
+        ]
+      },
+      "victor": "blue",
+      "overtime": true,
+      "round": 1
+    },
+    {
+      "teams": {
+        "orange": [
+          {
+            "score": "354",
+            "name": "iimrexclusive"
+          },
+          {
+            "score": "232",
+            "name": "peeisstored"
+          },
+          {
+            "score": "214",
+            "name": "nininmin"
+          }
+        ],
+        "blue": [
+          {
+            "score": "404",
+            "name": "mr.seacow"
+          },
+          {
+            "score": "214",
+            "name": "pompouspanda"
+          },
+          {
+            "score": "196",
+            "name": "enjoi"
+          }
+        ]
+      },
+      "victor": "orange",
+      "overtime": false,
+      "round": 1
+    },
+    {
+      "teams": {
+        "orange": [
+          {
+            "score": "514",
+            "name": "texianhero"
+          },
+          {
+            "score": "338",
+            "name": "-deceived"
+          },
+          {
+            "score": "322",
+            "name": "chibbzee"
+          }
+        ],
+        "blue": [
+          {
+            "score": "384",
+            "name": "hoodratdiplomat"
+          },
+          {
+            "score": "262",
+            "name": "scythe"
+          },
+          {
+            "score": "194",
+            "name": "violinpanda"
+          }
+        ]
+      },
+      "victor": "orange",
+      "overtime": false,
+      "round": 1
+    }
+  ],
+  "completedRounds": 1,
+  "overallLeaderboard": {
+    "mr.seacow": {
+      "points": 2,
+      "score": 366
+    },
+    "pompouspanda": {
+      "points": 2,
+      "score": 354
+    },
+    "enjoipanda": {
+      "points": 2,
+      "score": 272
+    },
+    "nininmin": {
+      "points": 1,
+      "score": 330
+    },
+    "dragon_king^-^": {
+      "points": 1,
+      "score": 297
+    },
+    "enjoi": {
+      "points": 1,
+      "score": 240
+    },
+    "iimrexclusive": {
+      "points": 2,
+      "score": 354
+    },
+    "peeisstored": {
+      "points": 2,
+      "score": 232
+    },
+    "hoodratdiplomat": {
+      "points": 0,
+      "score": 384
+    },
+    "scythe": {
+      "points": 0,
+      "score": 262
+    },
+    "violinpanda": {
+      "points": 0,
+      "score": 194
+    },
+    "texianhero": {
+      "points": 2,
+      "score": 514
+    },
+    "-deceived": {
+      "points": 2,
+      "score": 338
+    },
+    "chibbzee": {
+      "points": 2,
+      "score": 322
+    }
+  },
+  "sortedAfterRoundLeaderboard": [],
+  "currentRoundLeaderboard": {}
+}
