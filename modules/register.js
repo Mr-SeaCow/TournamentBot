@@ -14,7 +14,7 @@ module.exports = (Client, message, args) => {
             highestMatch = tourneyData.players[x];
         }
     }
-    if (highestSimilarity > .7) return message.channel.send(`Seems like you\'re already in the system as ${highestMatch}`)
+    if (highestSimilarity > .7) return message.channel.send(`Seems like you're already in the system as ${highestMatch}`)
     tourneyData.players.push(name)
     fs.writeFile('./data/tourneyData.json', JSON.stringify(tourneyData, null, 1), (err) => {
         if (err) return console.err;

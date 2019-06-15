@@ -54,8 +54,7 @@ function verificationCollector(teams, channel, nextMatchID) {
   const collector = new Discord.MessageCollector(channel, filter, { maxMatches: 1 });
   collector.on('collect', m => {
     let args = m.content.split(' ').slice(1, m.length);
-    let match = args.shift();
-    let correction = args;
+    args.shift();
     for (let x in iName) {
       let num = iName[x].number;
       if (num > 2) num = num - 3;

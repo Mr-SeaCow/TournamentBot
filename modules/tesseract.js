@@ -25,7 +25,7 @@ module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) =
                 .then(img => {
                     let spec = image.clone();
                     spec.crop(540, 835, 95, 25)
-                    spec.write('./images/spectators.jpg', (x) => {
+                    spec.write('./images/spectators.jpg', () => {
                         let arr = [89, 145, 202, 382, 439, 497] // No Spectators
                         let arr2 = [95, 152, 209, 390, 447, 504] // With Spectators
                         startTesseract(`./images/spectators.jpg`, 0, configNames, 'spectators', (spectators) => {
@@ -51,8 +51,8 @@ module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) =
                             }
                             victor = determineVictor(colors);
                             for (let i = 0; i < 6; i++) {
-                                startTesseract(`./images/score${i}.jpg`, i, configNumbers, 'score', (x) => {})
-                                startTesseract(`./images/name${i}.jpg`, i, configNames, 'name', (x) => {})
+                                startTesseract(`./images/score${i}.jpg`, i, configNumbers, 'score', () => {})
+                                startTesseract(`./images/name${i}.jpg`, i, configNames, 'name', () => {})
                             }
                         })
                     })
@@ -151,7 +151,7 @@ function ValidateDataObject(teams, victor, callback) {
         name = name.toLowerCase().trim().replace(/ /g, '');
         let highestMatch = '';
         let highestSimilarity = 0;
-        for (x in players) {
+        for (let x in players) {
             let s = similarity(name, players[x]);
             if (s > highestSimilarity) {
                 highestMatch = players[x];
@@ -189,7 +189,7 @@ function createReturnImage(iName, iScore, images, callback) {
     let currentAspectRatio = { width: 0, height: 0 };
     let imageArr = [];
     let imageArr2 = [];
-    for (x in iName) {
+    for (let x in iName) {
         let place = iName[x].number;
         let curImage = images.name[place];
         currentAspectRatio.width += curImage.bitmap.width;
@@ -199,7 +199,7 @@ function createReturnImage(iName, iScore, images, callback) {
         imageArr.push(curImage)
     }
     let altAspectRatio = { width: 0, height: 0 }
-    for (x in iScore) {
+    for (let x in iScore) {
         let place = iScore[x].number;
         let curImage = images.score[place];
         altAspectRatio.width += curImage.bitmap.width;
@@ -214,13 +214,13 @@ function createReturnImage(iName, iScore, images, callback) {
     new Jimp(currentAspectRatio.width, currentAspectRatio.height + altAspectRatio.height, (err, img) => {
         let x = 0;
         let y = 0;
-        for (i in imageArr) {
+        for (let i in imageArr) {
             img.composite(imageArr[i].grayscale(), x, y)
             x += imageArr[i].bitmap.width
         }
         x = 0;
         y = currentAspectRatio.height;
-        for (i in imageArr2) {
+        for (let i in imageArr2) {
             img.composite(imageArr2[i].grayscale(), x, y)
             x += imageArr2[i].bitmap.width
         }

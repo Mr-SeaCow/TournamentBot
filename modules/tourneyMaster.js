@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const events = require('events');
 const tourneyData = require('../data/tourneyData.json');
 const Discord = require('discord.js');
@@ -61,12 +62,12 @@ class tourneyMaster extends events {
                 if (!this.playerDoesExistInCurrentLeaderboard(curPlayer)) {
                     let points = this.determinePlayersPoints(teamString, victor, overtime);
                     this.addPlayerToCurrentLeaderboard(curPlayer, points);
-                };
-            };
-        };
+                }
+            }
+        }
         if (this.hasEveryonePlayed()) {
             this.updateAfterRoundLeaderboard();
-        };
+        }
         this.updateJSONFile();
     }
 
@@ -126,17 +127,17 @@ class tourneyMaster extends events {
             if (curNum == 0) {
                 teamA[j] = [];
                 teamB[j] = [];
-            };
+            }
             curNum++
             if (((Number(i) + 2) % 2) == 0) {
                 if (teamA[j]) teamA[j].push(sARL[i].name);
             } else {
                 teamB[j].push(sARL[i].name);
-            };
+            }
             if (curNum == 6) {
                 j++;
                 curNum = 0;
-            };
+            }
         }
         let matches = [];
         for (let x in teamA) {
@@ -149,10 +150,10 @@ class tourneyMaster extends events {
     generateSubs(A, B) {
         while (A.length < 3) {
             A.push('*SUBSTITUTE*');
-        };
+        }
         while (B.length < 3) {
             B.push('*SUBSTITUTE*');
-        };
+        }
     }
 
     hasEveryonePlayed() {
@@ -202,7 +203,7 @@ class tourneyMaster extends events {
             console.log("START THE FINALEEEEE");
         } else {
             this.generateNewSetOfMatches();
-        };
+        }
         this.updateJSONFile();
     }
 
