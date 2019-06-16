@@ -3,12 +3,27 @@ const events = require('events');
 const tourneyData = require('../data/tourneyData.json');
 const Discord = require('discord.js');
 const fs = require('fs');
+const similarity = require('./similarity');
+const statusHeader = `#--------------------------#\n#          STATUS          #\n#--------------------------#`;
+const statusArr = ['playerCount', 'matchesPlayed', 'currentRound', 'totalRounds', 'tourneyChannelId', 'tourneyHasStarted', 'registrationIsClosed',];
 
 class tourneyMaster extends events {
 
     constructor() {
         super();
         this._TourneyData = tourneyData;
+        this.embedSettings = {
+            color: '#cc3333',
+            author: [
+                'R3DIRECT TOURNAMENT BOT',
+                'https://cdn.discordapp.com/attachments/429036941254721547/589170766189297725/tourneyBot.png'
+            ],
+            thumbnail: 'https://i.stack.imgur.com/Pwbuz.png',
+            team: [
+                '__         **Team A**         __',
+                '__         **Team B**         __'
+            ]
+        }
     }
 
     get leaderboard() {
@@ -34,6 +49,26 @@ class tourneyMaster extends events {
         return tempArr;
     }
 
+    get status() {
+        let str = statusHeader;
+        for (let i in statusArr) {
+            switch (statusArr[i]){
+                case 'matchesPlayed': {
+                    str += `\n< ${statusArr[i]}="${this._TourneyData['matchData'].length}">`
+                    break;
+                }
+                case 'playerCount': {
+                    str += `\n< ${statusArr[i]}="${this._TourneyData['players'].length}">`
+                    break;
+                }
+                default: {
+                    str += `\n< ${statusArr[i]}="${this._TourneyData[statusArr[i]]}">`
+                }
+            }
+        }
+        return str
+    }
+
     get nextMatchID() {
         this.incNextMatchID();
         return this._TourneyData.nextMatchID;
@@ -47,11 +82,11 @@ class tourneyMaster extends events {
         let team = [blue, orange];
         let matchObj = {
             teams: {
-                orange, 
+                orange,
                 blue
-            }, 
-            victor, 
-            overtime, 
+            },
+            victor,
+            overtime,
             round: this._TourneyData.completedRounds + 1
         };
         this._TourneyData.matchData.push(matchObj);
@@ -81,6 +116,10 @@ class tourneyMaster extends events {
         };
     }
 
+    archiveCurrentTourney() {
+        fs.writeFileSync(`./data/archived/${Date.now()}.json`, JSON.stringify(tourneyData, null, 2))
+    }
+
     canProceedToFinals() {
         return (this._TourneyData.completedRounds >= this._TourneyData.totalRounds);
     }
@@ -99,20 +138,52 @@ class tourneyMaster extends events {
         return (victor == teamString ? 2 : (overtime == true ? 1 : 0));
     }
 
+    generateFirstMatch() {
+        this._TourneyData.players = this.randomizeArray(this._TourneyData.players, 100)
+        this.updateJSONFile();
+        return this.generateMatchEmbed(this.generateFirstTeams())
+    }
+
+    generateFirstTeams() {
+        let players = this._TourneyData.players;
+        let teams = [{
+            teamA: [],
+            teamB: []
+        }];
+
+        for (let i in players) {
+            let curSet = teams[teams.length - 1]
+            if (curSet.teamB.length < 3) {
+                if (curSet.teamA.length == curSet.teamB.length) {
+                    curSet.teamA.push(players[i]);
+                } else {
+                    curSet.teamB.push(players[i]);
+                }
+            } else {
+                teams.push({
+                    teamA: [players[i]],
+                    teamB: []
+                })
+            }
+        }
+        this.generateSubs(teams[teams.length - 1].teamA, teams[teams.length - 1].teamB)
+        return teams
+    }
+
     generateMatchEmbed(matches) {
         let embed = new Discord.RichEmbed()
-            .setColor('#cc3333')
-            .setTitle('**Round #2**')
-            .setAuthor('R3DIRECT TOURNAMENT BOT', 'https://cdn.discordapp.com/attachments/429036941254721547/589170766189297725/tourneyBot.png')//, 'https://i.imgur.com/wSTFkRM.png', 'https://discord.js.org') 
+            .setColor(this.embedSettings.color)
+            .setTitle(`**Round #${this._TourneyData.completedRounds + 1}**`)
+            .setAuthor(this.embedSettings.author[0], this.embedSettings.author[1])
             .setTimestamp()
-            .setThumbnail('https://i.stack.imgur.com/Pwbuz.png');
+            .setThumbnail(this.embedSettings.thumbnail);
 
         for (let i = 0; i < matches.length; i++) {
             let A = matches[i].teamA;
             let B = matches[i].teamB;
             this.generateSubs(A, B);
-            embed.addField('__         **Team A**         __', `- **${A[0]}**\n- **${A[1]}**\n- **${A[2]}**`, true)
-                .addField('__         **Team B**         __', `- **${B[0]}**\n- **${B[1]}**\n- **${B[2]}**`, true);
+            embed.addField(this.embedSettings.team[0], `- **${A[0]}**\n- **${A[1]}**\n- **${A[2]}**`, true)
+                .addField(this.embedSettings.team[1], `- **${B[0]}**\n- **${B[1]}**\n- **${B[2]}**`, true);
         }
         return embed;
     }
@@ -169,6 +240,49 @@ class tourneyMaster extends events {
         this.updateJSONFile();
     }
 
+    newTourney(message, args){
+        if (isNaN(args[0])) return message.channel.send('Please provide the expected round count.');
+        this.archiveCurrentTourney();
+        this._TourneyData = JSON.parse(fs.readFileSync('./data/newTourneyData.json'));
+        this._TourneyData.totalRounds = Number(args[0]);
+        this.updateJSONFile();
+        message.channel.send(`A ${args[0]} round round-robin styled tournament has been initialized.`);
+    }
+
+    randomizeArray(arr, reps = 1) {
+        let tempArr = [];
+        reps--;
+        for (let i in arr) {
+            let rand = Math.random();
+            if (rand > .5) { tempArr.push(arr[i]); }
+            else { tempArr.unshift(arr[i]); }
+        }
+        if (reps == 0) {
+            return tempArr;
+        } else {
+            return this.randomizeArray(tempArr, reps)
+        }
+    }
+
+    register(message, args) {
+        if (this.isRegistrationClosed()) return message.channel.send('Sorry, registration has already closed.')
+        if (!args[0]) return message.channel.send('Please provide the name of your account!');
+        let name = args.join('').toLowerCase().trim().replace(/ |"|\\/g, '');
+        let highestSimilarity = 0;
+        let highestMatch = '';
+        for (let x in this._TourneyData.players) {
+            let s = similarity(name, this._TourneyData.players[x]);
+            if (s > highestSimilarity) {
+                highestSimilarity = s;
+                highestMatch = this._TourneyData.players[x];
+            }
+        }
+        if (highestSimilarity > .7) return message.channel.send(`Seems like you're already in the system as ${highestMatch}`);
+        this._TourneyData.players.push(name);
+        this.updateJSONFile();
+        message.channel.send(`You were successfully registered under the name "**${name}**".`);
+    }
+
     playerDoesExistInCurrentLeaderboard(player) {
         return (this._TourneyData.currentRoundLeaderboard[player.name]);
     }
@@ -177,10 +291,16 @@ class tourneyMaster extends events {
         return (this._TourneyData.overallLeaderboard[player.name]);
     }
 
-    startTournament() {
-        if (this._TourneyData.tourneyHasStarted) return "Looks like the tournament has already started!";
+    startTournament(message) {
+        if (this._TourneyData.tourneyHasStarted) return message.channel.send("Looks like the tournament has already started!");
         if (this.isRegistrationClosed()) this.closeRegistration();
         this._TourneyData.tourneyHasStarted = true;
+        this.updateJSONFile();
+        message.channel.send({embed: this.generateFirstMatch()})
+    }
+    
+    setChannel(id) {
+        this._TourneyData.tourneyChannelId = id;
         this.updateJSONFile();
     }
 
@@ -223,9 +343,10 @@ class tourneyMaster extends events {
             }
         }
         this.updateJSONFile();
-    } 
+    }
 
     updateJSONFile() {
+        this._TourneyData.currentRound = this._TourneyData.completedRounds + 1;
         fs.writeFileSync('./data/tourneyData.json', JSON.stringify(this._TourneyData, null, 2));
     }
 }

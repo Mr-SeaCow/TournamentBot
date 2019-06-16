@@ -1,0 +1,12 @@
+{
+  "tourneyChannelId": "",
+  "registrationIsClosed": false,
+  "tourneyHasStarted": false,
+  "players": [],
+  "totalRounds": 5,
+  "matchData": [],
+  "completedRounds": 0,
+  "overallLeaderboard": {},
+  "sortedAfterRoundLeaderboard": [],
+  "currentRoundLeaderboard": {}
+}
