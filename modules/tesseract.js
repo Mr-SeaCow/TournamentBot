@@ -4,7 +4,7 @@ const { configNames, configNumbers, debug } = require('./constants')
 const { players } = require('../data/tourneyData.json');
 const similarity = require('./similarity');
 
-module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) => {
+module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback) => {
     let overtime = (args[0] == 'true' ? true : false);
     let victor;
     let attachment = getAttachment(message)
@@ -16,19 +16,23 @@ module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) =
     let blue = [{ score: 0, name: '' }, { score: 0, name: '' }, { score: 0, name: '' }]
     let orange = [{ score: 0, name: '' }, { score: 0, name: '' }, { score: 0, name: '' }];
     let total = 0;
-    let currentImages = { name: [], score: [] }
+    let currentImages = { name: [], score: [] };
+    let imageHash, matchID;
     Jimp.read(attachment)
         .then(image => {
             let clone = image.clone();
-            clone.crop(600, 200, 970, 540)
+            imageHash = clone.hash();
+            if (tourneyMaster.imageHashDoesExist(imageHash)) return message.channel.send('Whoops, looks like that image has already been submitted.');
+            matchID = tourneyMaster.nextMatchID;
+            clone.crop(600, 200, 970, 540);
             Jimp.read(clone)
                 .then(img => {
                     let spec = image.clone();
                     spec.crop(540, 835, 95, 25)
-                    spec.write('./images/spectators.jpg', () => {
+                    spec.write(`./images/spectators-match${matchID}.jpg`, () => {
                         let arr = [89, 145, 202, 382, 439, 497] // No Spectators
                         let arr2 = [95, 152, 209, 390, 447, 504] // With Spectators
-                        startTesseract(`./images/spectators.jpg`, 0, configNames, 'spectators', (spectators) => {
+                        startTesseract(`./images/spectators-match${matchID}.jpg`, 0, configNames, 'spectators', {imageHash, matchID}, (spectators) => {
 
                             let curArr = (spectators == true ? arr2 : arr)
                             let colors = [];
@@ -37,12 +41,12 @@ module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) =
                                 a.crop(475, curArr[i], 68, 24)
                                 a.brightness(.1)
                                 a.grayscale();
-                                a.write(`./images/score${i}.jpg`)
+                                a.write(`./images/score${i}-match${matchID}.jpg`)
                                 currentImages.score.push(a)
                                 let b = img.clone();
                                 b.crop(85, curArr[i] - 9, 400, 45)
                                 b.contrast(-.2)
-                                b.write(`./images/name${i}.jpg`)
+                                b.write(`./images/name${i}-match${matchID}.jpg`)
                                 currentImages.name.push(b)
                                 let c = img.clone();
                                 c.crop(570, curArr[i], 30, 24)
@@ -51,15 +55,15 @@ module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) =
                             }
                             victor = determineVictor(colors);
                             for (let i = 0; i < 6; i++) {
-                                startTesseract(`./images/score${i}.jpg`, i, configNumbers, 'score', () => {})
-                                startTesseract(`./images/name${i}.jpg`, i, configNames, 'name', () => {})
+                                startTesseract(`./images/score${i}-match${matchID}.jpg`, i, configNumbers, 'score', {imageHash, matchID}, () => {})
+                                startTesseract(`./images/name${i}-match${matchID}.jpg`, i, configNames, 'name', {imageHash, matchID}, () => {})
                             }
                         })
                     })
                 })
         })
 
-    function startTesseract(img, number, config, type, cb) {
+    function startTesseract(img, number, config, type, {imageHash, matchID}, cb) {
         tesseract
             .recognize(img, config)
             .then(text => {
@@ -84,12 +88,11 @@ module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) =
                 }
                 total++;
                 if (total == 12) {
-                    ValidateDataObject({ blue, orange }, victor, (iName, iScore) => {
-                        createReturnImage(iName, iScore, currentImages, () => {
-                            let matchID = tourneyMaster.nextMatchID;
+                    ValidateDataObject({ blue, orange }, victor, imageHash, (iName, iScore) => {
+                        createReturnImage(iName, iScore, currentImages, matchID, () => {
                             message.channel.send(`**Please verify the following names/numbers for match #${matchID}!**`, {
                                 files: [{
-                                    attachment: './images/verification.jpg',
+                                    attachment: `./images/verification-match${matchID}.jpg`,
                                     name: 'asking.jpg'
                                 }]
                             }).then(() => {
@@ -100,7 +103,7 @@ module.exports = (Client, message, args, tourneyMaster, msgCollectorCallback,) =
                                         message.channel.send(`\`\`\`JSON\n Orange:\n${JSON.stringify(orange, null, 1)}\n Blue:\n${JSON.stringify(blue, null, 2)}\`\`\``)
                                     }
                                 }
-                                msgCollectorCallback({ blue, orange, iName, iScore, victor, overtime}, message.channel, matchID)
+                                msgCollectorCallback({ blue, orange, iName, iScore, victor, overtime, imageHash}, message.channel, matchID, message)
                             })
                         })
                     })
@@ -122,7 +125,7 @@ function getAttachment(message) {
     return attachment
 }
 
-function ValidateDataObject(teams, victor, callback) {
+function ValidateDataObject(teams, victor, imageHash, callback) {
     let { blue, orange } = teams;
     let incorrectName = []
     let incorrectScore = [];
@@ -185,7 +188,7 @@ function ValidateDataObject(teams, victor, callback) {
 
 }
 
-function createReturnImage(iName, iScore, images, callback) {
+function createReturnImage(iName, iScore, images, matchID, callback) {
     let currentAspectRatio = { width: 0, height: 0 };
     let imageArr = [];
     let imageArr2 = [];
@@ -224,7 +227,7 @@ function createReturnImage(iName, iScore, images, callback) {
             img.composite(imageArr2[i].grayscale(), x, y)
             x += imageArr2[i].bitmap.width
         }
-        img.write('./images/verification.jpg')
+        img.write(`./images/verification-match${matchID}.jpg`)
         callback(img)
     })
 }

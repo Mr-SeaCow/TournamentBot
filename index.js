@@ -135,29 +135,48 @@ function addPaddingRight(totalLength, x) {
 
 
 
-function verificationCollector(teams, channel, nextMatchID, message) {
-  let { iName, iScore, victor, blue, orange, overtime } = teams;
-  const filter = (m) => { return (m.content.includes(`!verify ${nextMatchID}`) && m.content.split(' ').length > iName.length + iScore.length + 1 && message.author.id == m.authorl.id) };
-  const collector = new Discord.MessageCollector(channel, filter, { maxMatches: 1 });
+function verificationCollector(teams, channel, nextMatchID, author) {
+  let { iName, iScore, victor, blue, orange, overtime, imageHash } = teams;
+  console.log('message', author)
+  //const filter = (m) => { return (m.content.includes(`!verify ${nextMatchID}`) && m.content.split(' ').length > iName.length + iScore.length + 1 && author == m.author.id) };
+  const filter = (m) => { return (m.content.includes(`!verify`) && author == m.author.id) };
+  const collector = new Discord.MessageCollector(channel, filter, { time: 360000 });
   collector.on('collect', m => {
-    let args = m.content.split(' ').slice(1, m.length);
-    args.shift();
-    for (let x in iName) {
-      let num = iName[x].number;
-      if (num > 2) num = num - 3;
-      teams[iName[x].team][num].name = args.shift();
-    }
-    iName = [];
-    for (let x in iScore) {
-      let num = iScore[x].number;
-      if (num > 2) num = num - 3;
-      teams[iScore[x].team][num].score = args.shift();
-    }
-    iScore = [];
-    removeImages();
-    channel.send('Match has been verified!');
-    Client.tourneyMaster.addMatch(blue, orange, victor, overtime);
+    let args = m.content.split(' ').slice(1, m.length)
+    if (m.content.split(' ').length !== iName.length + iScore.length + 2) return channel.send(`Please reply using the following format \`!verify ${nextMatchID}${' NAME'.repeat(iName.length)}${' SCORE'.repeat(iScore.length)}\``)
+    if (args[0] != nextMatchID) return channel.send('Your matchID seems to be invalid.')
+    collector.stop('success')
   });
+  collector.on('end', (collected, reason) => {
+    switch (reason) {
+      case 'time': {
+        channel.send(`Oh no! Looks like you ran out of time. Please resubmit the screenshot.`)
+        break;
+      }
+      case 'success': {
+        let m = collected.get(collected.lastKey())
+
+        let args = m.content.split(' ').slice(1, m.length);
+        args.shift();
+        for (let x in iName) {
+          let num = iName[x].number;
+          if (num > 2) num = num - 3;
+          teams[iName[x].team][num].name = args.shift();
+        }
+        iName = [];
+        for (let x in iScore) {
+          let num = iScore[x].number;
+          if (num > 2) num = num - 3;
+          teams[iScore[x].team][num].score = args.shift();
+        }
+        iScore = [];
+        removeImages();
+        channel.send('Match has been verified!');
+        Client.tourneyMaster.addMatch(blue, orange, victor, overtime, imageHash);
+        break;
+      }
+    }
+  })
 }
 
 function authenticatedUser(member) {

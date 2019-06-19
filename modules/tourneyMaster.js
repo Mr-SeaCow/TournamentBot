@@ -78,9 +78,10 @@ class tourneyMaster extends events {
         return this._TourneyData;
     }
 
-    addMatch(blue, orange, victor, overtime) {
+    addMatch(blue, orange, victor, overtime, imageHash) {
         let team = [blue, orange];
         let matchObj = {
+            hash: imageHash,
             teams: {
                 orange,
                 blue
@@ -132,6 +133,10 @@ class tourneyMaster extends events {
 
     closeRegistration() {
         this._TourneyData.isRegistrationClosed = true;
+    }
+
+    imageHashDoesExist(hash) {
+        return (this._TourneyData.matchData.find(x => x.hash === hash) !== undefined);
     }
 
     determinePlayersPoints(teamString, victor, overtime) {
